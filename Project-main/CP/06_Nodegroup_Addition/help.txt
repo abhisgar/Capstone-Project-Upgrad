@@ -1,0 +1,1 @@
+eksctl create nodegroup -f cp-cluster.yaml

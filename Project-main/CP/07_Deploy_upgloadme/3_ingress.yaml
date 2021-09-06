@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "upg-loadme-ingress"
+  namespace: "demo"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-name: aws-load-balancer-controller
+    alb.ingress.kubernetes.io/subnets: subnet-06704c4e34a0c43a8 , subnet-005dea2560e69d3cc
+  labels:
+    app: upg-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: "upg-loadme-service"
+              servicePort: 80

@@ -1,0 +1,119 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: CP-Cluster
+  region: us-east-1
+  version: "1.20"
+#
+vpc:
+  id: "vpc-0d80e1e167ed0636e"
+  subnets:
+    public:
+      us-east-1a:
+          id: "subnet-06704c4e34a0c43a8"
+      us-east-1b:
+          id: "subnet-005dea2560e69d3cc"
+    private:
+      us-east-1a:
+          id: "subnet-07e96e8ef07e1532d"
+      us-east-1b:
+          id: "subnet-04dce32d16d42c7b7"
+  clusterEndpoints:
+     publicAccess: true
+     privateAccess: true
+
+iam:
+  withOIDC: true
+  serviceAccounts:
+  # - metadata:
+  #     name: s3-reader
+  #     # if no namespace is set, "default" will be used;
+  #     # the namespace will be created if it doesn't exist already
+  #     namespace: demo
+  #     labels: {aws-usage: "application"}
+  #   attachPolicyARNs:
+  #   - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  - metadata:
+      name: aws-load-balancer-controller
+      namespace: kube-system
+    wellKnownPolicies:
+      awsLoadBalancerController: true
+  # - metadata:
+  #     name: ebs-csi-controller-sa
+  #     namespace: kube-system
+  #   wellKnownPolicies:
+  #     ebsCSIController: true
+  # - metadata:
+  #     name: efs-csi-controller-sa
+  #     namespace: kube-system
+  #   wellKnownPolicies:
+  #     efsCSIController: true
+  # - metadata:
+  #     name: external-dns
+  #     namespace: kube-system
+  #   wellKnownPolicies:
+  #     externalDNS: true
+  # - metadata:
+  #     name: cert-manager
+  #     namespace: cert-manager
+  #   wellKnownPolicies:
+  #     certManager: true
+  - metadata:
+      name: cluster-autoscaler
+      namespace: kube-system
+      labels: {aws-usage: "cluster-ops"}
+    wellKnownPolicies:
+      autoScaler: true
+  # - metadata:
+  #     name: build-service
+  #     namespace: ci-cd
+  #   wellKnownPolicies:
+  #     imageBuilder: true
+  # - metadata:
+  #     name: cache-access
+  #     namespace: demo
+  #     labels: {aws-usage: "application"}
+  #   attachPolicyARNs:
+  #   - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+  #   - "arn:aws:iam::aws:policy/AmazonElastiCacheFullAccess"
+  - metadata:
+      name: autoscaler-service
+      namespace: kube-system
+    attachPolicy: # inline policy can be defined along with `attachPolicyARNs`
+      Version: "2012-10-17"
+      Statement:
+      - Effect: Allow
+        Action:
+        - "autoscaling:DescribeAutoScalingGroups"
+        - "autoscaling:DescribeAutoScalingInstances"
+        - "autoscaling:DescribeLaunchConfigurations"
+        - "autoscaling:DescribeTags"
+        - "autoscaling:SetDesiredCapacity"
+        - "autoscaling:TerminateInstanceInAutoScalingGroup"
+        - "ec2:DescribeLaunchTemplateVersions"
+        Resource: '*'
+  # - metadata:
+  #     name: some-app
+  #     namespace: default
+  #   attachRoleARN: arn:aws:iam::123:role/already-created-role-for-app
+
+nodeGroups: 
+- name: cp-worker-1
+  labels: 
+    role: cp-worker-1
+  instanceType: t2.medium
+  desiredCapacity: 1
+#  privateNetworking: false
+  subnets:
+  - subnet-06704c4e34a0c43a8
+  - subnet-005dea2560e69d3cc
+- name: cp-worker-2
+  labels: 
+    role: cp-worker-2
+  instanceType: t2.medium
+  desiredCapacity: 1
+  privateNetworking: true
+  subnets:
+  - subnet-07e96e8ef07e1532d
+  - subnet-04dce32d16d42c7b7

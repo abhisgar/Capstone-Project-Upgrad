@@ -1,0 +1,23 @@
+##################################1. Deply Cluster::##################################
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+##################################3. Patch the deployment::##################################
+
+kubectl patch deployment cluster-autoscaler \
+  -n kube-system \
+  -p '{"spec":{"template":{"metadata":{"annotations":{"cluster-autoscaler.kubernetes.io/safe-to-evict": "false"}}}}}'
+
+##################################4. Edit the deployment::##################################
+
+kubectl -n kube-system edit deployment.apps/cluster-autoscaler
+
+##################################5. Update with cluster name:##################################
+
+        - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
+
+##############################6. Set the Auto Scalar cluster image:##################################
+
+kubectl set image deployment cluster-autoscaler \
+  -n kube-system \
+  cluster-autoscaler=k8s.gcr.io/autoscaling/cluster-autoscaler:v1.20.0

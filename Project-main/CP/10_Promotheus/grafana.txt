@@ -1,0 +1,21 @@
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/master/bundle.yaml
+kubectl get deploy
+kubectl get pods
+
+--> Go to operator_k8s
+
+    apply the manidests
+
+    kubectl port-forward svc/prometheus 9090
+
+    apply 4_promethus-servicemonitor.yaml
+
+
+
+
+API KEy:
+
+
+curl -H "Authorization: Bearer eyJrIjoiYnkyeVBpWGNYWFdKS1ZzTnRSQlZKQVlDa0o4R1I1b3ciLCJuIjoiY3AtcHJvamVjdCIsImlkIjoxfQ==" https://cpproject.grafana.net/api/dashboards/home
+
+

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "upg-loadme"
+  namespace: "demo"
+spec:
+  selector:
+    matchLabels:
+      app: "upg"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "upg"
+    spec:
+      containers:
+      - name: upg-loadme
+        image: 476262889068.dkr.ecr.us-east-1.amazonaws.com/cp-repo:upg-loadme
+        imagePullPolicy: Always
+        name: "upg"
+        ports:
+        - containerPort: 8081
+        resources:
+          limits:
+            cpu: 50m
+          requests:
+            cpu: 20m
+#      imagePullSecrets:

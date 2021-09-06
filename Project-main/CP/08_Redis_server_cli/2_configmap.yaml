@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis
+  labels:
+    app: redis
+  namespace: demo
+data:
+    appendonly: "yes"
+    protected-mode: "no"
+    # maxcpu: "200m"
+    # maxmemory: "200Mi"
